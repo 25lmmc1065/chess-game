@@ -59,6 +59,13 @@ class ChessGUI:
         self.game_over = False
         self.game_result = None
         
+        # Animation state
+        self.animating_piece = None
+        self.animation_start_pos = None
+        self.animation_end_pos = None
+        self.animation_start_time = None
+        self.animation_duration = 0.3  # seconds
+        
     def draw_board(self, board: chess.Board, flip_board: bool = False):
         """Draw the chess board"""
         for rank in range(8):
@@ -96,6 +103,12 @@ class ChessGUI:
         for square in chess.SQUARES:
             piece = board.piece_at(square)
             if piece:
+                # Skip piece being animated
+                if (self.animating_piece and 
+                    self.animation_start_pos and 
+                    self.get_square_from_screen_pos(self.animation_start_pos, flip_board) == square):
+                    continue
+                
                 file = chess.square_file(square)
                 rank = chess.square_rank(square)
                 
@@ -113,6 +126,42 @@ class ChessGUI:
                 text = self.piece_font.render(symbol, True, color)
                 text_rect = text.get_rect(center=(x + SQUARE_SIZE // 2, y + SQUARE_SIZE // 2))
                 self.screen.blit(text, text_rect)
+        
+        # Draw animating piece if any
+        if self.animating_piece and self.animation_start_pos and self.animation_end_pos and self.animation_start_time:
+            elapsed = time.time() - self.animation_start_time
+            progress = min(1.0, elapsed / self.animation_duration)
+            
+            # Ease-in-out animation
+            progress = progress * progress * (3 - 2 * progress)
+            
+            current_x = self.animation_start_pos[0] + (self.animation_end_pos[0] - self.animation_start_pos[0]) * progress
+            current_y = self.animation_start_pos[1] + (self.animation_end_pos[1] - self.animation_start_pos[1]) * progress
+            
+            symbol = PIECE_SYMBOLS[self.animating_piece.symbol()]
+            color = (255, 255, 255) if self.animating_piece.color == chess.WHITE else (0, 0, 0)
+            
+            text = self.piece_font.render(symbol, True, color)
+            text_rect = text.get_rect(center=(current_x, current_y))
+            self.screen.blit(text, text_rect)
+    
+    def get_square_from_screen_pos(self, pos: Tuple[int, int], flip_board: bool = False) -> Optional[int]:
+        """Convert screen position to chess square (helper for animation)"""
+        x, y = pos
+        
+        # Check if within board bounds
+        if (x < BOARD_OFFSET_X or x >= BOARD_OFFSET_X + BOARD_SIZE or
+            y < BOARD_OFFSET_Y or y >= BOARD_OFFSET_Y + BOARD_SIZE):
+            return None
+        
+        file = (x - BOARD_OFFSET_X) // SQUARE_SIZE
+        rank = 7 - ((y - BOARD_OFFSET_Y) // SQUARE_SIZE)
+        
+        if flip_board:
+            file = 7 - file
+            rank = 7 - rank
+        
+        return chess.square(file, rank)
     
     def draw_highlights(self, board: chess.Board, flip_board: bool = False):
         """Draw highlighted squares for selected piece and valid moves"""
@@ -354,6 +403,48 @@ class ChessGUI:
         
         pygame.display.flip()
         return white_button, black_button
+    
+    def start_animation(self, move: chess.Move, board: chess.Board, flip_board: bool = False):
+        """Start animating a piece movement"""
+        self.animating_piece = board.piece_at(move.from_square)
+        if not self.animating_piece:
+            return
+        
+        # Calculate screen positions
+        from_file = chess.square_file(move.from_square)
+        from_rank = chess.square_rank(move.from_square)
+        to_file = chess.square_file(move.to_square)
+        to_rank = chess.square_rank(move.to_square)
+        
+        if flip_board:
+            from_x = BOARD_OFFSET_X + (7 - from_file) * SQUARE_SIZE + SQUARE_SIZE // 2
+            from_y = BOARD_OFFSET_Y + from_rank * SQUARE_SIZE + SQUARE_SIZE // 2
+            to_x = BOARD_OFFSET_X + (7 - to_file) * SQUARE_SIZE + SQUARE_SIZE // 2
+            to_y = BOARD_OFFSET_Y + to_rank * SQUARE_SIZE + SQUARE_SIZE // 2
+        else:
+            from_x = BOARD_OFFSET_X + from_file * SQUARE_SIZE + SQUARE_SIZE // 2
+            from_y = BOARD_OFFSET_Y + (7 - from_rank) * SQUARE_SIZE + SQUARE_SIZE // 2
+            to_x = BOARD_OFFSET_X + to_file * SQUARE_SIZE + SQUARE_SIZE // 2
+            to_y = BOARD_OFFSET_Y + (7 - to_rank) * SQUARE_SIZE + SQUARE_SIZE // 2
+        
+        self.animation_start_pos = (from_x, from_y)
+        self.animation_end_pos = (to_x, to_y)
+        self.animation_start_time = time.time()
+    
+    def is_animating(self) -> bool:
+        """Check if an animation is in progress"""
+        if not self.animation_start_time:
+            return False
+        
+        elapsed = time.time() - self.animation_start_time
+        return elapsed < self.animation_duration
+    
+    def clear_animation(self):
+        """Clear animation state"""
+        self.animating_piece = None
+        self.animation_start_pos = None
+        self.animation_end_pos = None
+        self.animation_start_time = None
     
     def get_square_from_pos(self, pos: Tuple[int, int], flip_board: bool = False) -> Optional[int]:
         """Convert screen position to chess square"""

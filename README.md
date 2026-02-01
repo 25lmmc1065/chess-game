@@ -22,12 +22,13 @@ A complete chess game implementation in Python featuring a beautiful GUI and a p
 - Valid move indicators (circles for regular moves, rings for captures)
 - Check highlighting in red
 - Last move highlighting in yellow
+- **Smooth piece movement animations** with ease-in-out effect
 - Move history display panel
 - Captured pieces display
 - Current turn indicator
 - Visual timer with warning color when time is low
 - Game result overlay with restart option
-- Smooth animations and responsive controls
+- Responsive controls and feedback
 
 ## Requirements
 

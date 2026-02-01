@@ -103,8 +103,13 @@ class ChessGameGUI:
         
         return None
     
-    def make_move(self, move: chess.Move):
+    def make_move(self, move: chess.Move, animate: bool = True):
         """Make a move on the board"""
+        # Start animation if enabled
+        flip_board = not self.user_is_white
+        if animate:
+            self.gui.start_animation(move, self.board, flip_board)
+        
         # Check if it's a capture
         captured_piece = self.board.piece_at(move.to_square)
         if captured_piece:
@@ -174,6 +179,10 @@ class ChessGameGUI:
                     break
                 
                 if event.type == pygame.MOUSEBUTTONDOWN and not self.game_over:
+                    # Don't allow clicks during animation
+                    if self.gui.is_animating():
+                        continue
+                    
                     # Determine whose turn it is
                     is_user_turn = (self.board.turn == chess.WHITE and self.user_is_white) or \
                                   (self.board.turn == chess.BLACK and not self.user_is_white)
@@ -181,15 +190,8 @@ class ChessGameGUI:
                     if is_user_turn and not ai_thinking:
                         move = self.handle_user_click(event.pos)
                         if move:
-                            self.make_move(move)
-                            self.move_start_time = time.time()
-                            
-                            # Check for game over
-                            result = self.check_game_over()
-                            if result:
-                                self.game_over = True
-                                self.gui.game_over = True
-                                self.gui.game_result = result
+                            self.make_move(move, animate=True)
+                            # Animation will complete in the render loop
                 
                 if event.type == pygame.MOUSEBUTTONDOWN and self.game_over:
                     # Check if restart button clicked
@@ -205,6 +207,22 @@ class ChessGameGUI:
                         else:
                             self.move_start_time = time.time()
             
+            # Check if animation is complete and handle post-move logic
+            if self.gui.is_animating():
+                # Animation still in progress, skip other logic
+                pass
+            elif self.gui.animation_start_time is not None:
+                # Animation just completed
+                self.gui.clear_animation()
+                self.move_start_time = time.time()
+                
+                # Check for game over after animation
+                result = self.check_game_over()
+                if result:
+                    self.game_over = True
+                    self.gui.game_over = True
+                    self.gui.game_result = result
+            
             # Calculate time remaining
             if not self.game_over:
                 time_elapsed = time.time() - self.move_start_time
@@ -214,8 +232,8 @@ class ChessGameGUI:
                 is_user_turn = (self.board.turn == chess.WHITE and self.user_is_white) or \
                               (self.board.turn == chess.BLACK and not self.user_is_white)
                 
-                # Check for timeout
-                if time_remaining <= 0 and not ai_thinking:
+                # Check for timeout (only if not animating)
+                if time_remaining <= 0 and not ai_thinking and not self.gui.is_animating():
                     if is_user_turn:
                         result = "Time's Up! " + ("Black Wins!" if self.user_is_white else "White Wins!")
                     else:
@@ -225,13 +243,13 @@ class ChessGameGUI:
                     self.gui.game_over = True
                     self.gui.game_result = result
                 
-                # AI turn
-                if not is_user_turn and not self.game_over and not ai_thinking:
+                # AI turn (only if no animation in progress)
+                if not is_user_turn and not self.game_over and not ai_thinking and not self.gui.is_animating():
                     ai_thinking = True
                     ai_start_time = time.time()
                 
                 # Process AI move (simulate thinking with minimum delay)
-                if ai_thinking:
+                if ai_thinking and not self.gui.is_animating():
                     ai_thinking_time = time.time() - ai_start_time
                     
                     # Get AI move if not already computed
@@ -240,17 +258,9 @@ class ChessGameGUI:
                     
                     # Make AI move after small delay for visual feedback (min 0.5s)
                     if ai_thinking_time >= 0.5 and ai_move:
-                        self.make_move(ai_move)
+                        self.make_move(ai_move, animate=True)
                         ai_move = None
                         ai_thinking = False
-                        self.move_start_time = time.time()
-                        
-                        # Check for game over
-                        result = self.check_game_over()
-                        if result:
-                            self.game_over = True
-                            self.gui.game_over = True
-                            self.gui.game_result = result
                     
                     # Check AI timeout
                     if time_remaining <= 0:
