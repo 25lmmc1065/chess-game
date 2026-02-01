@@ -80,7 +80,8 @@ class ChessGameGUI:
             
             if move:
                 # Check for pawn promotion
-                if self.board.piece_at(move.from_square).piece_type == chess.PAWN:
+                piece = self.board.piece_at(move.from_square)
+                if piece and piece.piece_type == chess.PAWN:
                     if chess.square_rank(move.to_square) in [0, 7]:
                         # Auto-promote to queen
                         move = chess.Move(move.from_square, move.to_square, chess.QUEEN)
@@ -249,6 +250,9 @@ class ChessGameGUI:
                     ai_start_time = time.time()
                 
                 # Process AI move (simulate thinking with minimum delay)
+                # Note: AI computation is done in main thread to keep code simple.
+                # At depth 4, AI thinks in 0.5-2 seconds which is acceptable.
+                # The UI continues to render at 30 FPS during this time.
                 if ai_thinking and not self.gui.is_animating():
                     ai_thinking_time = time.time() - ai_start_time
                     

@@ -123,9 +123,9 @@ Properly detects and displays:
 
 ```
 chess-game/
-├── main.py           # Main game controller (280 lines)
-├── chess_gui.py      # GUI rendering module (490 lines)
-├── chess_ai.py       # AI engine module (250 lines)
+├── main.py           # Main game controller (302 lines)
+├── chess_gui.py      # GUI rendering module (488 lines)
+├── chess_ai.py       # AI engine module (271 lines)
 ├── chess_game.py     # CLI version (backup/alternative)
 ├── test_game.py      # Test script
 ├── requirements.txt  # Dependencies

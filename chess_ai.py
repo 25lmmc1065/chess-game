@@ -200,7 +200,7 @@ class ChessAI:
                 captured = board.piece_at(move.to_square)
                 attacker = board.piece_at(move.from_square)
                 if captured and attacker:
-                    score += PIECE_VALUES[captured.piece_type] - PIECE_VALUES[attacker.piece_type] // 10
+                    score += PIECE_VALUES[captured.piece_type] - (PIECE_VALUES[attacker.piece_type] // 10)
             
             board.push(move)
             if board.is_check():
