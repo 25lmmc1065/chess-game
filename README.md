@@ -10,7 +10,7 @@ A complete chess game implementation in Python featuring a powerful AI opponent 
 - **Strong AI Implementation**:
   - Minimax algorithm with Alpha-Beta pruning
   - Advanced evaluation function considering material, position, and mobility
-  - Search depth of 3-4 plies for strong gameplay
+  - Search depth of 3 plies (configurable in code) for strong gameplay
 - **Move Timer**: 15-second timer for each move
 - **Clean CLI Interface**: ASCII board display with clear status messages
 - **Hindi Language Support**: Bilingual prompts and messages
@@ -97,7 +97,7 @@ Enter move (e.g., e2e4) / चाल दर्ज करें: e2e4
 
 ### Minimax with Alpha-Beta Pruning
 The AI uses the Minimax algorithm with Alpha-Beta pruning to search the game tree efficiently:
-- **Search Depth**: 3 plies (configurable)
+- **Search Depth**: 3 plies by default (can be changed by modifying `self.search_depth` in the code)
 - **Alpha-Beta Pruning**: Eliminates unnecessary branches to speed up search
 - **Move Ordering**: Prioritizes captures for better pruning
 

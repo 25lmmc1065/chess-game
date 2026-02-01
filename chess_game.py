@@ -195,7 +195,7 @@ class ChessGame:
                 continue
             
             value = PIECE_VALUES[piece.piece_type]
-            pos_value = self.get_position_value(piece, square)
+            pos_value = self.get_position_value(piece, square, board)
             
             if piece.color == chess.WHITE:
                 white_material += value + pos_value
@@ -213,7 +213,7 @@ class ChessGame:
         
         return score
     
-    def get_position_value(self, piece, square):
+    def get_position_value(self, piece, square, board=None):
         """Get positional value for a piece on a square"""
         piece_type = piece.piece_type
         
@@ -233,7 +233,8 @@ class ChessGame:
             return QUEEN_TABLE[square]
         elif piece_type == chess.KING:
             # Use endgame table if few pieces remain
-            if len(self.board.piece_map()) <= 10:
+            target_board = board if board is not None else self.board
+            if len(target_board.piece_map()) <= 10:
                 return KING_END_GAME_TABLE[square]
             else:
                 return KING_MIDDLE_GAME_TABLE[square]
@@ -293,9 +294,10 @@ class ChessGame:
         print("AI is thinking... / AI सोच रहा है...")
         start_time = time.time()
         
-        # AI plays as white or black
-        maximizing = (self.board.turn == chess.WHITE and not self.user_is_white) or \
-                     (self.board.turn == chess.BLACK and self.user_is_white)
+        # AI maximizes when playing as white (evaluation is from white's perspective)
+        # When get_ai_move() is called, it's always AI's turn
+        ai_is_white = not self.user_is_white
+        maximizing = ai_is_white
         
         _, best_move = self.minimax(
             self.board, 
@@ -361,12 +363,12 @@ class ChessGame:
             else:
                 print("Illegal move! / अवैध चाल!")
                 return self.get_user_move_with_timer()
-        except:
+        except (ValueError, chess.InvalidMoveError, chess.IllegalMoveError):
             # Try SAN notation
             try:
                 move = self.board.parse_san(move_input[0])
                 return move
-            except:
+            except (ValueError, chess.InvalidMoveError, chess.IllegalMoveError):
                 print("Invalid move format! Please use format like 'e2e4' or 'Nf3' / अवैध चाल प्रारूप!")
                 return self.get_user_move_with_timer()
     
