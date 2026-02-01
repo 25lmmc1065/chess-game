@@ -1,6 +1,8 @@
 # Chess Game - Player vs AI / शतरंज खेल - खिलाड़ी बनाम AI
 
-A complete chess game implementation in Python featuring a powerful AI opponent using Minimax algorithm with Alpha-Beta pruning.
+A complete chess game implementation in Python featuring a powerful AI opponent using Minimax algorithm with Alpha-Beta pruning. Available in both **GUI** and **CLI** modes.
+
+![Chess Game GUI](https://github.com/user-attachments/assets/7f898f97-d555-4a50-bf40-3227f33e8cd3)
 
 ## Features / विशेषताएं
 
@@ -11,21 +13,26 @@ A complete chess game implementation in Python featuring a powerful AI opponent 
   - Minimax algorithm with Alpha-Beta pruning
   - Advanced evaluation function considering material, position, and mobility
   - Search depth of 3 plies (configurable in code) for strong gameplay
-- **Move Timer**: 15-second timer for each move
-- **Clean CLI Interface**: ASCII board display with clear status messages
+- **Two Interface Options**:
+  - **GUI Mode** (Recommended): Beautiful graphical interface with clearly distinguishable piece shapes
+  - **CLI Mode**: ASCII board display for terminal use
 - **Hindi Language Support**: Bilingual prompts and messages
 
 ### Additional Features:
 - Display of captured pieces
-- Move history tracking (type 'history' during your turn)
-- Support for both UCI (e.g., e2e4) and SAN (e.g., Nf3) notation
-- Resignation option (type 'resign')
+- Move history tracking
+- Legal move highlighting (GUI)
+- Last move highlighting (GUI)
+- Check indication
+- Support for both UCI (e.g., e2e4) and SAN (e.g., Nf3) notation (CLI)
+- Resignation option
 - Complete game state detection (checkmate, stalemate, draw)
 
 ## Requirements / आवश्यकताएं
 
 - Python 3.7 or higher
 - python-chess library
+- pygame library (for GUI mode)
 
 ## Installation / स्थापना
 
@@ -42,20 +49,33 @@ pip install -r requirements.txt
 
 ## How to Run / कैसे चलाएं
 
-Run the game using:
+### GUI Mode (Recommended) / ग्राफिकल मोड
+Run the graphical version with beautiful piece graphics:
+```bash
+python chess_game_gui.py
+```
+
+### CLI Mode / कमांड लाइन मोड
+Run the command-line version:
 ```bash
 python chess_game.py
 ```
 
-Or make it executable and run directly:
-```bash
-chmod +x chess_game.py
-./chess_game.py
-```
-
 ## How to Play / कैसे खेलें
 
-1. **Start the Game**: Run the chess_game.py file
+### GUI Mode:
+1. **Start the Game**: Run `python chess_game_gui.py`
+2. **Choose Color**: Click on White or Black button to select your color
+3. **Make Moves**: 
+   - Click on a piece to select it (legal moves will be highlighted)
+   - Click on a highlighted square to move the piece
+4. **Special Actions**:
+   - Click "New Game" to start a new game
+   - Click "Resign" to resign the current game
+5. **Win the Game**: Checkmate your opponent or force a draw
+
+### CLI Mode:
+1. **Start the Game**: Run `python chess_game.py`
 2. **Choose Color**: Select whether you want to play as White (first) or Black (second)
 3. **Make Moves**: 
    - Enter moves in UCI format (e.g., `e2e4` to move pawn from e2 to e4)
@@ -65,6 +85,19 @@ chmod +x chess_game.py
    - Type `history` to view all moves played so far
    - Type `resign` to concede the game
 5. **Win the Game**: Checkmate your opponent or force a draw
+
+## Chess Pieces / शतरंज के मोहरे
+
+Each piece has a distinctive shape that makes it easy to identify:
+
+| Piece | Name (English/Hindi) | Shape Description |
+|-------|---------------------|-------------------|
+| ♔/♚ | King / राजा | Cross on top |
+| ♕/♛ | Queen / रानी | Crown with 5 points and balls |
+| ♖/♜ | Rook / हाथी | Castle with battlements |
+| ♗/♝ | Bishop / ऊंट | Pointed miter (hat) |
+| ♘/♞ | Knight / घोड़ा | Horse head |
+| ♙/♟ | Pawn / प्यादा | Simple rounded shape |
 
 ## Game Interface Example
 
@@ -146,7 +179,8 @@ The game ends when:
 
 ```
 chess-game/
-├── chess_game.py      # Main game file with all functionality
+├── chess_game_gui.py  # GUI version with graphical pieces
+├── chess_game.py      # CLI version with ASCII board
 ├── requirements.txt   # Python dependencies
 └── README.md         # This file
 ```
@@ -155,10 +189,21 @@ chess-game/
 
 ### Libraries Used
 - **python-chess**: Handles chess rules, move validation, and game state
-- **threading**: Implements move timer functionality
-- **time**: Time tracking for AI thinking and move timer
+- **pygame**: Provides graphical interface and piece rendering (GUI mode)
+- **threading**: Implements move timer functionality (CLI mode)
+- **time**: Time tracking for AI thinking
 
 ### Key Classes and Functions
+
+#### GUI Version (`chess_game_gui.py`):
+- `PieceRenderer`: Renders distinct graphical chess pieces
+- `ChessGameGUI`: Main game class with graphical interface
+  - `draw_board()`: Draws the chess board with highlights
+  - `draw_pieces()`: Renders pieces using distinct shapes
+  - `minimax()`: AI move selection using Minimax with Alpha-Beta pruning
+  - `handle_click()`: Processes mouse clicks for piece selection and movement
+
+#### CLI Version (`chess_game.py`):
 - `ChessGame`: Main game class
   - `evaluate_position()`: Evaluates board positions
   - `minimax()`: AI move selection using Minimax with Alpha-Beta pruning
