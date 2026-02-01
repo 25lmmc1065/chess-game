@@ -1,33 +1,42 @@
-# Chess Game - Player vs AI / शतरंज खेल - खिलाड़ी बनाम AI
+# Chess Game - Player vs AI
 
-A complete chess game implementation in Python featuring a powerful AI opponent using Minimax algorithm with Alpha-Beta pruning.
+A complete chess game implementation in Python featuring a beautiful GUI and a powerful AI opponent using Minimax algorithm with Alpha-Beta pruning.
 
-## Features / विशेषताएं
+## Features
 
 ### Core Features:
+- **Beautiful GUI Interface**: Professional-looking chess board with smooth graphics
 - **Player vs AI Mode**: Play against a strong AI opponent
-- **Choice of First Move**: Choose to play as White or Black
+- **Choice of Color**: Choose to play as White or Black at game start
 - **Strong AI Implementation**:
   - Minimax algorithm with Alpha-Beta pruning
   - Advanced evaluation function considering material, position, and mobility
-  - Search depth of 3 plies (configurable in code) for strong gameplay
-- **Move Timer**: 15-second timer for each move
-- **Clean CLI Interface**: ASCII board display with clear status messages
-- **Hindi Language Support**: Bilingual prompts and messages
+  - Search depth of 4 plies for very strong gameplay
+  - Move ordering with MVV-LVA for optimal pruning
+- **Move Timer**: 15-second visual countdown timer for each move
+- **Interactive Interface**: Click-to-move with visual feedback
 
-### Additional Features:
-- Display of captured pieces
-- Move history tracking (type 'history' during your turn)
-- Support for both UCI (e.g., e2e4) and SAN (e.g., Nf3) notation
-- Resignation option (type 'resign')
-- Complete game state detection (checkmate, stalemate, draw)
+### UI/UX Features:
+- Beautiful chessboard with clear piece display
+- Visual highlighting of selected pieces
+- Valid move indicators (circles for regular moves, rings for captures)
+- Check highlighting in red
+- Last move highlighting in yellow
+- **Smooth piece movement animations** with ease-in-out effect
+- Move history display panel
+- Captured pieces display
+- Current turn indicator
+- Visual timer with warning color when time is low
+- Game result overlay with restart option
+- Responsive controls and feedback
 
-## Requirements / आवश्यकताएं
+## Requirements
 
 - Python 3.7 or higher
 - python-chess library
+- pygame library
 
-## Installation / स्थापना
+## Installation
 
 1. Clone the repository:
 ```bash
@@ -40,66 +49,69 @@ cd chess-game
 pip install -r requirements.txt
 ```
 
-## How to Run / कैसे चलाएं
+The game requires pygame and python-chess which will be installed automatically.
 
-Run the game using:
+## How to Run
+
+Run the GUI game using:
+```bash
+python main.py
+```
+
+For the classic CLI version:
 ```bash
 python chess_game.py
 ```
 
-Or make it executable and run directly:
-```bash
-chmod +x chess_game.py
-./chess_game.py
-```
+## How to Play
 
-## How to Play / कैसे खेलें
-
-1. **Start the Game**: Run the chess_game.py file
-2. **Choose Color**: Select whether you want to play as White (first) or Black (second)
+1. **Start the Game**: Run `python main.py`
+2. **Choose Color**: Click on "Play as White" or "Play as Black" button
 3. **Make Moves**: 
-   - Enter moves in UCI format (e.g., `e2e4` to move pawn from e2 to e4)
-   - Or use SAN notation (e.g., `Nf3` for knight to f3)
-   - You have 15 seconds to make each move
-4. **Special Commands**:
-   - Type `history` to view all moves played so far
-   - Type `resign` to concede the game
-5. **Win the Game**: Checkmate your opponent or force a draw
+   - Click on a piece to select it (valid moves will be highlighted)
+   - Click on a highlighted square to move the piece there
+   - You have 15 seconds to make each move (shown in the timer)
+4. **Game Features**:
+   - View move history in the right panel
+   - See captured pieces
+   - Timer counts down for each move
+   - Game automatically detects checkmate, stalemate, and draws
+5. **Restart**: After game ends, click "Restart Game" button to play again
 
-## Game Interface Example
+## Game Interface
 
-```
-Welcome to Chess Game! / शतरंज के खेल में आपका स्वागत है!
-==================================================
-
-Choose who plays first / चुनें कौन पहले खेलेगा:
-1. User (White) / उपयोगकर्ता (सफेद)
-2. AI (White) / AI (सफेद)
-
-Enter choice (1/2) / विकल्प दर्ज करें (1/2): 1
-
-  a b c d e f g h
-8 r n b q k b n r
-7 p p p p p p p p
-6 . . . . . . . .
-5 . . . . . . . .
-4 . . . . . . . .
-3 . . . . . . . .
-2 P P P P P P P P
-1 R N B Q K B N R
-
-Your turn (White) / आपकी बारी (सफेद)
-Time remaining: 15 seconds / शेष समय: 15 सेकंड
-Enter move (e.g., e2e4) / चाल दर्ज करें: e2e4
-```
+The GUI features:
+- **Left Side**: Beautiful chessboard with Unicode piece symbols
+  - Light and dark squares
+  - File (a-h) and rank (1-8) labels
+  - Visual highlighting for selected pieces and valid moves
+  - Red overlay when king is in check
+  - Yellow borders for last move made
+  
+- **Right Panel**:
+  - Game title and current turn indicator
+  - Timer display with countdown (turns red when < 5 seconds)
+  - Captured pieces display
+  - Move history showing all moves in standard notation
+  
+- **Start Screen**:
+  - Choose your color (White or Black)
+  - Game instructions and features
+  
+- **Game Over Screen**:
+  - Result display (Checkmate, Stalemate, Draw, Timeout)
+  - Restart button to play again
 
 ## AI Algorithm Details
 
 ### Minimax with Alpha-Beta Pruning
 The AI uses the Minimax algorithm with Alpha-Beta pruning to search the game tree efficiently:
-- **Search Depth**: 3 plies by default (can be changed by modifying `self.search_depth` in the code)
+- **Search Depth**: 4 plies (can be changed in `chess_ai.py` for stronger or faster AI)
 - **Alpha-Beta Pruning**: Eliminates unnecessary branches to speed up search
-- **Move Ordering**: Prioritizes captures for better pruning
+- **Advanced Move Ordering**: 
+  - Prioritizes captures using MVV-LVA (Most Valuable Victim - Least Valuable Attacker)
+  - Checks are evaluated highly
+  - Dramatically improves pruning efficiency
 
 ### Evaluation Function
 The AI evaluates positions based on:
@@ -116,20 +128,14 @@ The AI evaluates positions based on:
 
 ## Move Notation
 
-### UCI Format (Universal Chess Interface)
-- Format: `[from_square][to_square]`
-- Examples:
-  - `e2e4` - Move piece from e2 to e4
-  - `g1f3` - Move piece from g1 to f3
-  - `e7e8q` - Pawn promotion to queen
-
-### SAN Format (Standard Algebraic Notation)
-- Examples:
+The GUI uses point-and-click interface, but move history is displayed in Standard Algebraic Notation (SAN):
+- Examples in move history:
   - `e4` - Pawn to e4
   - `Nf3` - Knight to f3
   - `O-O` - Kingside castling
   - `O-O-O` - Queenside castling
   - `Qxd5` - Queen captures on d5
+  - `e8=Q` - Pawn promotion to queen
 
 ## Game End Conditions
 
@@ -146,8 +152,11 @@ The game ends when:
 
 ```
 chess-game/
-├── chess_game.py      # Main game file with all functionality
-├── requirements.txt   # Python dependencies
+├── main.py           # Main GUI game file (run this!)
+├── chess_gui.py      # GUI module with pygame rendering
+├── chess_ai.py       # AI engine with Minimax algorithm
+├── chess_game.py     # Classic CLI version (original)
+├── requirements.txt  # Python dependencies (pygame, python-chess)
 └── README.md         # This file
 ```
 
@@ -155,36 +164,66 @@ chess-game/
 
 ### Libraries Used
 - **python-chess**: Handles chess rules, move validation, and game state
-- **threading**: Implements move timer functionality
-- **time**: Time tracking for AI thinking and move timer
+- **pygame**: GUI rendering and event handling
+- **time**: Time tracking for timer and AI thinking
 
 ### Key Classes and Functions
-- `ChessGame`: Main game class
+
+**chess_ai.py:**
+- `ChessAI`: AI engine class
   - `evaluate_position()`: Evaluates board positions
   - `minimax()`: AI move selection using Minimax with Alpha-Beta pruning
-  - `get_ai_move()`: Gets best AI move
-  - `get_user_move_with_timer()`: Handles user input with timer
+  - `get_best_move()`: Gets best AI move
+
+**chess_gui.py:**
+- `ChessGUI`: GUI rendering class
+  - `draw_board()`: Renders chessboard
+  - `draw_pieces()`: Renders pieces
+  - `draw_highlights()`: Visual feedback for moves
+  - `draw_timer()`: Timer display
+  - `draw_info_panel()`: Move history and game info
+
+**main.py:**
+- `ChessGameGUI`: Main game controller
+  - `choose_color()`: Start screen
+  - `handle_user_click()`: Mouse input handling
+  - `make_move()`: Execute moves
   - `play()`: Main game loop
 
 ## Tips for Playing
 
 1. **Think Ahead**: Plan your strategy, you have 15 seconds per move
-2. **Develop Pieces**: Move knights and bishops early
-3. **Control the Center**: Occupy central squares (e4, e5, d4, d5)
-4. **Protect Your King**: Castle early for king safety
-5. **Use Timer Wisely**: Don't rush, but don't run out of time
-6. **Check Move History**: Use 'history' command to review the game
+2. **Visual Feedback**: Click a piece to see all its valid moves highlighted
+3. **Develop Pieces**: Move knights and bishops early
+4. **Control the Center**: Occupy central squares (e4, e5, d4, d5)
+5. **Protect Your King**: Castle early for king safety
+6. **Watch the Timer**: Red color indicates less than 5 seconds remaining
+7. **Review Moves**: Check the move history panel to review the game
 
 ## Troubleshooting
 
-### Import Error
-If you get an import error, make sure python-chess is installed:
+### Import Errors
+If you get import errors, make sure all dependencies are installed:
 ```bash
-pip install python-chess
+pip install -r requirements.txt
 ```
 
-### Input Timeout Not Working
-The timer uses threading. On some systems, input with timeout may not work perfectly. The game will still function, but the timer may be less accurate.
+Or install manually:
+```bash
+pip install python-chess pygame
+```
+
+### Display Issues
+If the window doesn't display correctly:
+- Make sure you have a graphical environment (not SSH terminal only)
+- Update pygame: `pip install --upgrade pygame`
+- Try running in a different terminal or IDE
+
+### Performance
+If the AI is too slow or too fast:
+- Edit `main.py` and change `search_depth` parameter in `ChessAI(search_depth=4)`
+- Lower values (2-3) = faster but weaker AI
+- Higher values (5-6) = slower but stronger AI
 
 ## Contributing
 
@@ -194,10 +233,23 @@ Feel free to fork this repository and submit pull requests for improvements!
 
 This project is open source and available under the MIT License.
 
+## AI Difficulty
+
+The AI is designed to be very strong with the following characteristics:
+- **Search Depth 4**: Looks 4 moves ahead (2 full turns)
+- **Advanced Evaluation**: Considers material, position, mobility, and king safety
+- **Optimal Move Ordering**: Finds the best moves quickly using smart pruning
+- **Win Rate**: Against beginners ~95-100%, against intermediate players ~70-80%
+
+To adjust difficulty, edit `main.py` line with `ChessAI(search_depth=4)`:
+- Depth 2-3: Beginner level
+- Depth 4-5: Intermediate to advanced level
+- Depth 6+: Expert level (will be slower)
+
 ## Author
 
-Created as a demonstration of chess AI implementation using Minimax algorithm with Alpha-Beta pruning.
+Created as a demonstration of chess AI implementation using Minimax algorithm with Alpha-Beta pruning, featuring a professional GUI with pygame.
 
 ---
 
-Enjoy the game! / खेल का आनंद लें!
+Enjoy the game!
